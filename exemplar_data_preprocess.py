@@ -54,6 +54,6 @@ if __name__ == "__main__":
     en_label = "EnglishName"
     type_label = "Type"
     tran_dict, type_dict = build_dictionary(data, cn_label, en_label, type_label)
-    savename = "./data/en_relation.xls"
+    savename = "./data/exemplar_knowledge_graph_v1_en_relation.xlsx"
     ori_data = read_data(filename, sheet_name="relation")
     create_sheet("en_relation", savename, tran_dict, ori_data, type_dict)

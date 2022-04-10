@@ -131,8 +131,8 @@ if __name__ == "__main__":
     # Aura queries use an encrypted connection using the "neo4j+s" URI scheme
     uri = "neo4j+s://e8710434.databases.neo4j.io"
     user = "neo4j"
-    password = ""
-    filename = "./data/en_relation.xls"
+    password = "lz8xLo4lMB7BVfvY31qz_RSF3_9fe8-DjdcjjfisANw"
+    filename = "./data/exemplar_knowledge_graph_v1_en_relation.xls"
     data = data_preprocess.read_data(filename, sheet_name="en_relation")
     app = App(uri, user, password)
     app.delete_all_graph()
