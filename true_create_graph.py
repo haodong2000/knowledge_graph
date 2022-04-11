@@ -4,6 +4,7 @@ from neo4j import GraphDatabase
 import logging
 from neo4j.exceptions import ServiceUnavailable
 import true_data_preprocess
+import pandas as pd
 
 
 class App:
@@ -29,53 +30,61 @@ class App:
         # Don't forget to close the driver connection when you are finished with it
         self.driver.close()
 
-    def create_relation(self, piece):
-        subject, sub_type, relation, object_, obj_type = piece[
-            0], piece[1], piece[2], piece[3], piece[4]
-        flag_1, flag_2 = self.check_current(subject, object_)
+    def create_relation(self, piece, index):
+        subject, sub_type, sub_class, relation, object_, obj_type, obj_class = piece[
+            0], piece[1], piece[2], piece[3], piece[4], piece[5], piece[6]
+        flag_1, flag_2 = self.check_current(piece[0:2], piece[4:6])
         with self.driver.session() as session:
             # Write transactions allow the driver to handle retries and transient errors
             result = session.write_transaction(
-                self._create_and_return_nodes, subject, sub_type, relation, object_, obj_type, flag_1, flag_2)
+                self._create_and_return_nodes, subject, sub_type, sub_class, relation, object_, obj_type, obj_class, flag_1, flag_2)
             for row in result:
-                print("Created relation ->", row, flag_1, flag_2)
+                print("Created relation", index, "\t->", row, flag_1, flag_2)
         with self.driver.session() as session:
             # Write transactions allow the driver to handle retries and transient errors
             _ = session.write_transaction(
-                self._create_relation, subject, sub_type, relation, object_, obj_type, flag_1, flag_2)
+                self._create_relation, subject, sub_type, sub_class, relation, object_, obj_type, obj_class, flag_1, flag_2)
 
     @staticmethod
-    def _create_relation(tx, subject, sub_type, relation, object_, obj_type, flag_1, flag_2):
+    def _create_relation(tx, subject, sub_type, sub_class, relation, object_, obj_type, obj_class, flag_1, flag_2):
         query = (
-            "MATCH (a: " + sub_type + "), (b: " + obj_type + ") WHERE a.name=$subject AND b.name=$object_ CREATE (a)-[:" + relation + "] -> (b)"
+            "MATCH (a: " + sub_type + "), (b: " + obj_type +
+            ") WHERE a.name=$subject AND a.class=$sub_class AND b.name=$object_ AND b.class=$obj_class CREATE (a)-[:" +
+            relation + "] -> (b)"
         )
-        _ = tx.run(query, sub_type=sub_type, obj_type=obj_type, subject=subject, object_=object_)
+        _ = tx.run(query, sub_type=sub_type, obj_type=obj_type, subject=subject,
+                   object_=object_, sub_class=sub_class, obj_class=obj_class)
 
     @staticmethod
-    def _create_and_return_nodes(tx, subject, sub_type, relation, object_, obj_type, flag_1, flag_2):
+    def _create_and_return_nodes(tx, subject, sub_type, sub_class, relation, object_, obj_type, obj_class, flag_1, flag_2):
         # To learn more about the Cypher syntax, see https://neo4j.com/docs/cypher-manual/current/
         # The Reference Card is also a good resource for keywords https://neo4j.com/docs/cypher-refcard/current/
         if flag_1 and flag_2:
             query = (
-                "CREATE (" + subject + ":" + sub_type + " { name: $subject }) "
-                "CREATE (" + object_ + ":" + obj_type + " { name: $object_ }) "
+                "CREATE (" + subject + ":" + sub_type +
+                " { name: $subject, class: $sub_class }) "
+                "CREATE (" + object_ + ":" + obj_type +
+                " { name: $object_, class: $obj_class }) "
                 "RETURN " + subject + ", " + object_
             )
         elif flag_1 is False and flag_2 is True:
             query = (
-                "CREATE (" + object_ + ":" + obj_type + " { name: $object_ }) "
+                "CREATE (" + object_ + ":" + obj_type +
+                " { name: $object_, class: $obj_class }) "
                 "RETURN " + object_
             )
         elif flag_2 is False and flag_1 is True:
             query = (
-                "CREATE (" + subject + ":" + sub_type + " { name: $subject }) "
+                "CREATE (" + subject + ":" + sub_type +
+                " { name: $subject, class: $sub_class }) "
                 "RETURN " + subject
             )
         else:
             query = (
                 "RETURN 0"
             )
-        result = tx.run(query, subject=subject, sub_type=sub_type, object_=object_, obj_type=obj_type)
+        result = tx.run(query, subject=subject, sub_type=sub_type, object_=object_,
+                        obj_type=obj_type, sub_class=sub_class, obj_class=obj_class)
         try:
             if flag_1 and flag_2:
                 return [{subject: row[subject]["name"], object_: row[object_]["name"]}
@@ -127,17 +136,31 @@ class App:
         return [row for row in result]
 
 
+ALL_PIECE = []
+
+
+def check_new_piece(piece):
+    if piece not in ALL_PIECE:
+        ALL_PIECE.append(piece)
+        return False
+    else:
+        return True
+
+
 if __name__ == "__main__":
     # Aura queries use an encrypted connection using the "neo4j+s" URI scheme
     uri = "neo4j+s://e8710434.databases.neo4j.io"
     user = "neo4j"
     password = "lz8xLo4lMB7BVfvY31qz_RSF3_9fe8-DjdcjjfisANw"
-    filename = "./data/exemplar_knowledge_graph_v1_en_relation.xls"
+    filename = "./data/insomnia_and_sleep_quality_relation.xlsx"
     # @TODO: read relation data
+    data = pd.read_excel(filename, sheet_name="EN_RELATION")
     app = App(uri, user, password)
     app.delete_all_graph()
-    for i in range(len(data)):
-        piece = [data[data.columns[j]][i] for j in range(5)]
-        app.create_relation(piece)
-    app.find_object("AKI", "DISEASE")
+    for i in range(data.shape[0]):
+        piece = [data[data.columns[j]][i] for j in range(7)]
+        if check_new_piece(piece):
+            continue
+        app.create_relation(piece, i)
+    app.find_object("LESION_T", "INTEGRATE")
     app.close()
