@@ -3,7 +3,7 @@
 from neo4j import GraphDatabase
 import logging
 from neo4j.exceptions import ServiceUnavailable
-import exemplar_data_preprocess
+import data_preprocess_0
 
 
 class App:
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     user = "neo4j"
     password = "lz8xLo4lMB7BVfvY31qz_RSF3_9fe8-DjdcjjfisANw"
     filename = "./data/exemplar_knowledge_graph_v1_en_relation.xlsx"
-    data = exemplar_data_preprocess.read_data(filename, sheet_name="en_relation")
+    data = data_preprocess_0.read_data(filename, sheet_name="en_relation")
     app = App(uri, user, password)
     app.delete_all_graph()
     for i in range(len(data)):

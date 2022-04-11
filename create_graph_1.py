@@ -3,7 +3,6 @@
 from neo4j import GraphDatabase
 import logging
 from neo4j.exceptions import ServiceUnavailable
-import true_data_preprocess
 import pandas as pd
 
 
