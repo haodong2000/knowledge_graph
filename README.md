@@ -9,8 +9,8 @@
 
 ![final](https://github.com/LeBronLiHD/SR_ZJUPH_KnowledgeGraph/blob/main/images/graph.svg)
 
-- On 2022-04-11, based on 3 sub-type of insomnia:
-  - The main-type (yellow node) and each sub-type (pink nodes) has about 10 properties
+- On 2022-04-11, based on 3 sub-types of insomnia:
+  - Each node (main-type in yellow and sub-type in pink) has about 10 properties
   - `data_preprocess_1.py` for data preprocessing
   - `create_graph_1.py` for uploading to server
 
