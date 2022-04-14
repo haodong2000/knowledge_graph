@@ -218,7 +218,7 @@ if __name__ == "__main__":
         filename_relation="./data/insomnia_and_sleep_quality_relation.xlsx",
         sheet_names=["MAIN", "CHRONIC_INSOMNIA",
                      "MENSTRUAL_INSOMNIA", "INSOMNIA", "MENOPAUSE_INSOMNIA",
-                     "GAD_7"],
+                     "GAD_7", "ISI", "ANALYSIS"],
         en_name_col="EnglishName",
         cn_name_col="ChineseName",
         type_col="Type",
