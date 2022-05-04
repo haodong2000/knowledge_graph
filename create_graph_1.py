@@ -163,3 +163,18 @@ if __name__ == "__main__":
         app.create_relation(piece, i)
     app.find_object("LESION_T", "INTEGRATE")
     app.close()
+
+'''
+
+1. 睡眠日志（含有时序信息）转化为图谱中的信息（当前的状态，医生的知识）（学习一）
+2. 高亮出重要的知识
+3. 预测与分类模型
+4. 可解释性（通过图谱）（学习二）（图谱中的一条线）
+
+1. 临床文章（JAMA）
+2. 临床指南
+3. 权威性
+
+Loss(F(x), y) + Loss(select)
+
+'''
