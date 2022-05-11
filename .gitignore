@@ -11,6 +11,7 @@ __pycache__/
 .idea/
 references/
 .vscode/
+data_secret/
 
 # Distribution / packaging
 .Python
