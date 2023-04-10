@@ -2,7 +2,7 @@
 
 - My first repository about Scientific Research, so excited
 - Knowledge Graph about insomnia and sleep quality (Prof. Huang's laboratory)
-- Visualization render tool: `neo4j server community` [LINK](https://neo4j.com/)
+- Visualization render tool: [`neo4j server community`](https://neo4j.com/)
 - Simple demo on 2022-04-08: 
   - `data_preprocess_0.py` for data preprocessing
   - `create_graph_0.py` for uploading to server
